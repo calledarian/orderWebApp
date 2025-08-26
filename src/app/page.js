@@ -11,10 +11,10 @@ import {
   Star,
   AccessTime,
   LocationOn,
-  Send,
   Store,
   CheckCircle,
   QrCode,
+  ArrowRightAlt
 } from '@mui/icons-material';
 
 // --- Data (No Changes) ---
@@ -47,6 +47,7 @@ const branches = [
   { id: 3, name: 'BKK1', address: 'Street 51, BKK1, Phnom Penh' },
 ];
 
+
 const RestaurantOrderApp = () => {
   // --- State Management (No Changes) ---
   const [activeCategory, setActiveCategory] = useState(menuCategories[0].name);
@@ -70,7 +71,6 @@ const RestaurantOrderApp = () => {
     } else {
       setCart([...cart, { ...item, quantity: 1 }]);
     }
-    showNotification(`${item.name} added to cart!`, 'success');
   };
 
   const removeFromCart = (itemId) => {
@@ -90,11 +90,7 @@ const RestaurantOrderApp = () => {
 
   const handlePlaceOrder = () => {
     const orderSummary = {
-      customer: customerInfo,
-      items: cart,
-      total: getTotalPrice(),
-      branch: selectedBranch,
-      paymentMethod,
+      customer: customerInfo, items: cart, total: getTotalPrice(), branch: selectedBranch, paymentMethod,
       timestamp: new Date().toISOString()
     };
     console.log('Order placed:', orderSummary);
@@ -136,50 +132,80 @@ const RestaurantOrderApp = () => {
 
   const showNotification = (message, variant) => {
     setNotification({ show: true, message, variant });
+    setTimeout(() => {
+      setNotification({ show: false, message: '', variant: 'success' });
+    }, 3000);
   };
 
-  // --- Render (Refactored with Bootstrap) ---
   return (
     <>
+      <style>{`
+        body { background-color: #f8f9fa; }
+        .btn-brand { background-color: #FF6347; border-color: #FF6347; color: white; }
+        .btn-brand:hover { background-color: #E5533D; border-color: #E5533D; color: white; }
+        .text-brand { color: #FF6347 !important; }
+        .navbar-brand-custom { background-color: #FF6347; }
+        .nav-tabs .nav-link { color: #6c757d; }
+        .nav-tabs .nav-link.active { color: #FF6347; border-color: #dee2e6 #dee2e6 #FF6347; }
+        .card-menu-item { transition: all 0.2s ease-in-out; }
+        .card-menu-item:hover { transform: translateY(-5px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .quantity-btn { width: 30px; height: 30px; line-height: 1; border-radius: 50%; padding: 0; }
+        .branch-card { cursor: pointer; border: 2px solid transparent; }
+        .branch-card.selected { border-color: #FF6347; background-color: #fff5f2; }
+        .view-cart-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1020;
+            transition: transform 0.3s ease-in-out;
+            transform: translateY(100%);
+        }
+        .view-cart-bar.show { transform: translateY(0); }
+      `}</style>
+
       {/* Header */}
-      <nav className="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow-sm">
-        <div className="container-fluid">
+      <nav className="navbar navbar-light bg-white sticky-top shadow-sm">
+        <div className="container">
           <a className="navbar-brand d-flex align-items-center" href="#">
-            <Moped className="me-2" />
-            Turkish Shawarma & Fast Food
-          </a>
-          <button className="btn btn-primary position-relative" onClick={() => setCartOpen(true)}>
-            <ShoppingCart />
-            <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-              {getTotalItems()}
-              <span className="visually-hidden">items in cart</span>
+            <span className="navbar-brand-custom p-2 rounded-circle me-2 d-flex align-items-center justify-content-center">
+              <Moped style={{ color: 'white' }} />
             </span>
+            <span className="fw-bold">Turkish Shawarma</span>
+          </a>
+          <button className="btn btn-light position-relative" onClick={() => setCartOpen(true)}>
+            <ShoppingCart className="text-muted" />
+            {getTotalItems() > 0 &&
+              <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                {getTotalItems()}
+              </span>
+            }
           </button>
         </div>
       </nav>
 
-      <div className="container my-4">
+      <div className="container my-4" style={{ paddingBottom: '100px' }}>
         {/* Restaurant Info */}
-        <div className="card mb-4">
+        <div className="card mb-4 border-0">
           <div className="card-body">
             <h1 className="card-title h3">Turkish Shawarma & Fast Food in Phnom Penh 🇰🇭</h1>
-            <div className="d-flex flex-wrap gap-3 text-muted">
-              <span className="d-flex align-items-center"><Star className="text-warning me-1" /> 4.9 ★ (500+)</span>
-              <span className="d-flex align-items-center"><AccessTime className="me-1" /> Delivery: 20-30 min</span>
-              <span className="d-flex align-items-center"><LocationOn className="me-1" /> Free delivery</span>
+            <div className="d-flex flex-wrap gap-3 text-muted small">
+              <span className="d-flex align-items-center"><Star className="text-warning me-1" fontSize="small" /> <b>4.9</b> (500+ ratings)</span>
+              <span className="d-flex align-items-center"><AccessTime className="me-1" fontSize="small" /> 20-30 min</span>
+              <span className="d-flex align-items-center"><LocationOn className="me-1" fontSize="small" /> Free delivery</span>
             </div>
           </div>
         </div>
 
         {/* Category Tabs */}
-        <ul className="nav nav-tabs nav-fill mb-4">
+        <ul className="nav nav-tabs nav-fill mb-4 border-0">
           {menuCategories.map((category) => (
             <li className="nav-item" key={category.name}>
               <button
                 className={`nav-link w-100 ${activeCategory === category.name ? 'active' : ''}`}
                 onClick={() => setActiveCategory(category.name)}
               >
-                <span className="me-2">{category.icon}</span> {category.name}
+                <span className="me-2 fs-5">{category.icon}</span> {category.name}
               </button>
             </li>
           ))}
@@ -189,24 +215,24 @@ const RestaurantOrderApp = () => {
         <div className="row g-3">
           {menuItems[activeCategory]?.map((item) => (
             <div className="col-12 col-md-6 col-lg-4" key={item.id}>
-              <div className="card h-100">
+              <div className="card h-100 border-0 card-menu-item">
                 <img src={item.image} className="card-img-top" alt={item.name} height="200" style={{ objectFit: 'cover' }} />
                 <div className="card-body d-flex flex-column">
                   <div className="d-flex justify-content-between">
-                    <h5 className="card-title">{item.name}</h5>
-                    <Badge bg="primary" pill>⭐ {item.rating}</Badge>
+                    <h5 className="card-title mb-1">{item.name}</h5>
+                    <Badge bg="warning" text="dark" pill className="d-flex align-items-center">⭐ {item.rating}</Badge>
                   </div>
-                  <p className="card-text text-muted">{item.description}</p>
+                  <p className="card-text text-muted small flex-grow-1">{item.description}</p>
                   <div className="mt-auto d-flex justify-content-between align-items-center">
-                    <p className="h4 text-primary mb-0">${item.price.toFixed(2)}</p>
+                    <p className="h4 text-brand fw-bold mb-0">${item.price.toFixed(2)}</p>
                     {getQuantityInCart(item.id) > 0 ? (
                       <div className="d-flex align-items-center gap-2">
-                        <Button variant="outline-primary" size="sm" onClick={() => removeFromCart(item.id)}><Remove /></Button>
-                        <span className="fw-bold">{getQuantityInCart(item.id)}</span>
-                        <Button variant="outline-primary" size="sm" onClick={() => addToCart(item)}><Add /></Button>
+                        <Button variant="outline-danger" className="quantity-btn" onClick={() => removeFromCart(item.id)}><Remove fontSize="small" /></Button>
+                        <span className="fw-bold fs-5">{getQuantityInCart(item.id)}</span>
+                        <Button variant="danger" className="quantity-btn" onClick={() => addToCart(item)}><Add fontSize="small" /></Button>
                       </div>
                     ) : (
-                      <Button variant="primary" onClick={() => addToCart(item)}><Add className="me-1" /> Add</Button>
+                      <Button variant="outline-dark" onClick={() => addToCart(item)}><Add className="me-1" /> Add</Button>
                     )}
                   </div>
                 </div>
@@ -216,50 +242,50 @@ const RestaurantOrderApp = () => {
         </div>
       </div>
 
-      {/* Floating Action Button */}
-      {cart.length > 0 && (
-        <Button
-          variant="danger"
-          className="position-fixed bottom-0 end-0 m-3 rounded-circle shadow-lg"
-          style={{ width: '60px', height: '60px' }}
-          onClick={() => setOrderModal(true)}>
-          <Send />
-        </Button>
-      )}
+      {/* View Cart Bar */}
+      <div className={`view-cart-bar p-3 bg-white shadow-lg ${cart.length > 0 ? 'show' : ''}`}>
+        <div className="container">
+          <div className="d-grid">
+            <Button variant="brand" size="lg" className="d-flex justify-content-between align-items-center" onClick={() => setCartOpen(true)}>
+              <span>{getTotalItems()} item{getTotalItems() > 1 && 's'} | ${getTotalPrice()}</span>
+              <span>View Cart <ArrowRightAlt /></span>
+            </Button>
+          </div>
+        </div>
+      </div>
 
-      {/* Cart Offcanvas (Sidebar) */}
+      {/* Cart Offcanvas */}
       <Offcanvas show={cartOpen} onHide={() => setCartOpen(false)} placement="end">
         <Offcanvas.Header closeButton>
-          <Offcanvas.Title>Your Order ({getTotalItems()} items)</Offcanvas.Title>
+          <Offcanvas.Title>Your Order</Offcanvas.Title>
         </Offcanvas.Header>
-        <Offcanvas.Body>
+        <Offcanvas.Body className="d-flex flex-column">
           {cart.length === 0 ? (
-            <p>Your cart is empty.</p>
+            <div className="text-center m-auto">
+              <p className="fs-1">🛒</p>
+              <h5>Your cart is empty</h5>
+              <p className="text-muted">Add items from the menu to start an order.</p>
+            </div>
           ) : (
             <>
-              <ul className="list-group list-group-flush mb-3">
+              <ul className="list-group list-group-flush mb-3 flex-grow-1">
                 {cart.map(item => (
-                  <li className="list-group-item d-flex justify-content-between align-items-center" key={item.id}>
+                  <li className="list-group-item d-flex justify-content-between align-items-center px-0" key={item.id}>
                     <div>
-                      <div>{item.name}</div>
-                      <small className="text-muted">${item.price.toFixed(2)} each</small>
+                      <div className="fw-bold">{item.name}</div>
+                      <small className="text-brand fw-bold">${item.price.toFixed(2)}</small>
                     </div>
                     <div className="d-flex align-items-center gap-2">
-                      <Button variant="outline-primary" size="sm" onClick={() => removeFromCart(item.id)}><Remove /></Button>
-                      <span className="fw-bold">{item.quantity}</span>
-                      <Button variant="outline-primary" size="sm" onClick={() => addToCart(item)}><Add /></Button>
+                      <Button variant="outline-danger" className="quantity-btn" onClick={() => removeFromCart(item.id)}><Remove fontSize="small" /></Button>
+                      <span className="fw-bold fs-5">{item.quantity}</span>
+                      <Button variant="danger" className="quantity-btn" onClick={() => addToCart(item)}><Add fontSize="small" /></Button>
                     </div>
                   </li>
                 ))}
               </ul>
-              <div className="d-grid gap-2">
-                <div className="card bg-light">
-                  <div className="card-body text-center">
-                    <h5 className="card-title">Total: ${getTotalPrice()}</h5>
-                  </div>
-                </div>
-                <Button variant="primary" size="lg" onClick={() => { setCartOpen(false); setOrderModal(true); }}>
-                  Place Order
+              <div className="mt-auto d-grid gap-2">
+                <Button variant="brand" size="lg" onClick={() => { setCartOpen(false); setOrderModal(true); }}>
+                  Go to Checkout - ${getTotalPrice()}
                 </Button>
               </div>
             </>
@@ -271,13 +297,12 @@ const RestaurantOrderApp = () => {
       <Modal show={orderModal} onHide={() => { setOrderModal(false); resetOrderProcess(); }} centered>
         <Modal.Header closeButton>
           <Modal.Title>
-            {orderStep === 1 && 'Complete Your Order'}
-            {orderStep === 2 && 'Select Branch & Payment'}
-            {orderStep === 3 && 'Pay with QR Code'}
+            {orderStep === 1 && 'Confirm Delivery Details'}
+            {orderStep === 2 && 'Checkout'}
+            {orderStep === 3 && 'Complete Payment'}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {/* Step 1: Customer Info */}
           {orderStep === 1 && (
             <Form>
               <Form.Group className="mb-3">
@@ -290,87 +315,53 @@ const RestaurantOrderApp = () => {
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Delivery Address</Form.Label>
-                <Form.Control as="textarea" rows={2} placeholder="Enter delivery address" value={customerInfo.address} onChange={e => setCustomerInfo({ ...customerInfo, address: e.target.value })} required />
+                <Form.Control as="textarea" rows={2} placeholder="e.g. #123, Street 456, Sangkat Boeung Keng Kang I" value={customerInfo.address} onChange={e => setCustomerInfo({ ...customerInfo, address: e.target.value })} required />
               </Form.Group>
-              <div className="card bg-light mt-3">
-                <div className="card-body">
-                  <h6 className="card-title">Order Summary</h6>
-                  {cart.map(item => (
-                    <div className="d-flex justify-content-between" key={item.id}>
-                      <span>{item.name} x{item.quantity}</span>
-                      <span>${(item.price * item.quantity).toFixed(2)}</span>
-                    </div>
-                  ))}
-                  <hr />
-                  <div className="d-flex justify-content-between fw-bold">
-                    <span>Total:</span>
-                    <span>${getTotalPrice()}</span>
-                  </div>
-                </div>
-              </div>
             </Form>
           )}
-
-          {/* Step 2: Branch & Payment */}
           {orderStep === 2 && (
             <>
-              <h6>Select a Branch:</h6>
-              <div className="row g-2 mb-4">
+              <h6>Select Pickup Branch:</h6>
+              <div className="vstack gap-2 mb-4">
                 {branches.map(branch => (
-                  <div className="col-12" key={branch.id}>
-                    <div
-                      className={`card card-body ${selectedBranch?.id === branch.id ? 'border-primary' : ''}`}
-                      onClick={() => setSelectedBranch(branch)}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <div className="d-flex align-items-center">
-                        <Store className="me-3 text-primary" />
-                        <div>
-                          <div className="fw-bold">{branch.name}</div>
-                          <small className="text-muted">{branch.address}</small>
-                        </div>
+                  <div key={branch.id} className={`p-3 rounded border branch-card ${selectedBranch?.id === branch.id ? 'selected' : ''}`} onClick={() => setSelectedBranch(branch)}>
+                    <div className="d-flex align-items-center">
+                      <Store className="me-3 text-brand" />
+                      <div>
+                        <div className="fw-bold">{branch.name}</div>
+                        <small className="text-muted">{branch.address}</small>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
               <hr />
-              <h6>Select Payment Method:</h6>
+              <h6>Payment Method:</h6>
               <Form.Check type="radio" id="cod" label="Cash on Delivery" value="COD" checked={paymentMethod === 'COD'} onChange={e => setPaymentMethod(e.target.value)} />
-              <Form.Check type="radio" id="qr" label="Scan QR Code" value="QR" checked={paymentMethod === 'QR'} onChange={e => setPaymentMethod(e.target.value)} />
+              <Form.Check type="radio" id="qr" label="Pay via ABA QR" value="QR" checked={paymentMethod === 'QR'} onChange={e => setPaymentMethod(e.target.value)} />
             </>
           )}
-
-          {/* Step 3: QR Code */}
           {orderStep === 3 && (
             <div className="text-center">
-              <h6>Please scan the QR code to pay:</h6>
-              <img src="https://placehold.co/200x200/000000/FFFFFF?text=QR+Code" alt="QR Code" className="img-fluid my-3" />
-              <p className="text-muted">After payment, please upload a screenshot of the receipt.</p>
-              <Button variant="primary" onClick={handleFileUpload} disabled={qrUploaded}>
+              <h6>Scan to pay with ABA Mobile:</h6>
+              <img src="https://placehold.co/200x200/FFFFFF/000000?text=ABA+QR" alt="QR Code" className="img-fluid my-3 rounded" />
+              <p className="text-muted">After paying, upload a screenshot of the receipt.</p>
+              <Button variant="brand" onClick={handleFileUpload} disabled={qrUploaded}>
                 {qrUploaded ? <><CheckCircle className="me-2" /> Uploaded</> : <><QrCode className="me-2" /> Upload Screenshot</>}
               </Button>
             </div>
           )}
         </Modal.Body>
-        <Modal.Footer>
-          {orderStep > 1 && <Button variant="secondary" onClick={() => setOrderStep(orderStep - 1)}>Back</Button>}
-          <Button variant="outline-secondary" onClick={() => { setOrderModal(false); resetOrderProcess(); }}>Cancel</Button>
-          <Button variant="primary" onClick={handleNextStep}>
-            {(orderStep === 2 && paymentMethod === 'COD') || orderStep === 3 ? 'Place Order' : 'Next'}
+        <Modal.Footer className="d-grid">
+          <Button variant="brand" size="lg" onClick={handleNextStep}>
+            {(orderStep === 2 && paymentMethod === 'COD') || orderStep === 3 ? `Place Order - $${getTotalPrice()}` : 'Continue'}
           </Button>
         </Modal.Footer>
       </Modal>
 
       {/* Notification Toast */}
       {notification.show && (
-        <Alert
-          variant={notification.variant}
-          onClose={() => setNotification({ ...notification, show: false })}
-          dismissible
-          className="position-fixed bottom-0 start-50 translate-middle-x m-3 shadow-lg"
-          style={{ zIndex: 1100 }}
-        >
+        <Alert variant={notification.variant} className="position-fixed top-0 start-50 translate-middle-x m-3 shadow-lg" style={{ zIndex: 1100 }}>
           {notification.message}
         </Alert>
       )}
