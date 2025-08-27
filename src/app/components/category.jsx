@@ -1,13 +1,23 @@
 import React from "react";
 import { Tabs, Tab, Box } from "@mui/material";
 
-export default function Category({ menuCategories, activeCategory, setActiveCategory }) {
+export default function Category({ activeCategory, setActiveCategory }) {
     const handleChange = (event, newValue) => {
         setActiveCategory(newValue);
     };
+    const menuCategories = ["All", "Shawarma", "Burgers", "Pizza", "Drinks"];
+
 
     return (
-        <Box sx={{ borderBottom: 1, borderColor: "divider", overflowX: "auto", mb: 2 }}>
+        <Box sx={{
+            borderBottom: 1,
+            borderColor: "divider",
+            overflowX: "auto",
+            mb: 2,
+            width: "100%",
+            display: "flex",
+            justifyContent: "center"
+        }}>
             <Tabs
                 value={activeCategory}
                 onChange={handleChange}

@@ -6,9 +6,10 @@ import { Offcanvas, Modal, Button, Form, Alert } from "react-bootstrap";
 import Header from "./components/header";
 import Category from "./components/category";
 import Menu from "./components/menu";
-import CartBar from "./components/cartBar";
 import OffCanvas from "./components/offCanvas";
 import CheckOut from "./components/checkOut";
+import LabelBottomNavigation from "./components/BottomNavigation";
+import Branches from "./components/branches";
 
 const RestaurantOrderApp = () => {
   // --- Data ---
@@ -31,12 +32,13 @@ const RestaurantOrderApp = () => {
   };
 
   const branches = [
-    { id: 1, name: "Central Market", address: "Russian Market, Phnom Penh" },
-    { id: 2, name: "Riverside", address: "Sisowath Quay, Phnom Penh" },
-    { id: 3, name: "BKK1", address: "Street 51, BKK1, Phnom Penh" },
+    { id: 1, name: "Central Market", address: "Russian Market, Phnom Penh", map: "https://www.google.com/maps?q=Street+51,+BKK1,+Phnom+Penh" },
+    { id: 2, name: "Riverside", address: "Sisowath Quay, Phnom Penh", map: "https://www.google.com/maps?q=Street+51,+BKK1,+Phnom+Penh" },
+    { id: 3, name: "BKK1", address: "Street 51, BKK1, Phnom Penh", map: "https://www.google.com/maps?q=Street+51,+BKK1,+Phnom+Penh" },
   ];
 
   const [activeCategory, setActiveCategory] = useState("All");
+  const [activePage, setActivePage] = useState("menu");
   const [cart, setCart] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [orderModal, setOrderModal] = useState(false);
@@ -127,33 +129,31 @@ const RestaurantOrderApp = () => {
   return (
     <>
       <Header cartOpen={cartOpen} setCartOpen={setCartOpen} getTotalItems={getTotalItems} />
-
       <div className="container my-4" style={{ paddingBottom: "100px" }}>
 
-        <Category
-          menuCategories={menuCategories}
-          activeCategory={activeCategory}
-          setActiveCategory={setActiveCategory}
-        />
+        {activePage === "menu" && (
+          <Category
+            menuCategories={menuCategories}
+            activeCategory={activeCategory}
+            setActiveCategory={setActiveCategory}
+          />
+        )}
 
-
-
-        <Menu
-          items={getItemsForCategory(activeCategory)}
-          getQuantityInCart={getQuantityInCart}
-          addToCart={addToCart}
-          removeFromCart={removeFromCart}
-        />
-
+        {activePage === "menu" ? (
+          <Menu
+            items={getItemsForCategory(activeCategory)}
+            getQuantityInCart={getQuantityInCart}
+            addToCart={addToCart}
+            removeFromCart={removeFromCart}
+          />
+        ) : (
+          <Branches
+            branches={branches}
+            selectedBranch={selectedBranch}
+            setSelectedBranch={setSelectedBranch}
+          />
+        )}
       </div>
-
-      <CartBar
-        cart={cart}
-        getTotalItems={getTotalItems}
-        getTotalPrice={getTotalPrice}
-        setCartOpen={setCartOpen}
-      />
-
 
       <OffCanvas
         cart={cart}
@@ -190,6 +190,8 @@ const RestaurantOrderApp = () => {
           {notification.message}
         </Alert>
       )}
+      <LabelBottomNavigation currentPage={activePage} setCurrentPage={setActivePage} />
+
     </>
   );
 };
