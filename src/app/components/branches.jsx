@@ -1,16 +1,17 @@
 import ForkRightIcon from '@mui/icons-material/ForkRight';
 
 const Branches = ({ branches, selectedBranch, setSelectedBranch }) => (
-    <div className="row g-3">
+    // Use a new container that takes up the full width and height
+    <div className="branches-container w-full h-full p-4 overflow-y-auto">
         {branches.map(branch => (
             <div
                 key={branch.id}
                 className={`
-          col-12 p-3 border rounded mb-2 d-flex justify-content-between align-items-center
-          transition-transform duration-300 ease-in-out
-          hover:shadow-lg hover:scale-105
-          ${selectedBranch?.id === branch.id ? "bg-primary text-white shadow-xl scale-105" : ""}
-        `}
+                    p-3 border rounded m-2 d-flex justify-content-between align-items-center
+                    transition-transform duration-300 ease-in-out
+                    hover:shadow-lg hover:scale-105
+                    ${selectedBranch?.id === branch.id ? "bg-primary text-white shadow-xl scale-105" : ""}
+                `}
                 onClick={() => setSelectedBranch(branch)}
                 style={{ cursor: "pointer" }}
             >
@@ -28,7 +29,7 @@ const Branches = ({ branches, selectedBranch, setSelectedBranch }) => (
                 >
                     <ForkRightIcon
                         style={{
-                            fontSize: "40px", // bigger icon
+                            fontSize: "40px",
                             color: selectedBranch?.id === branch.id ? "white" : "#007bff",
                         }}
                     />

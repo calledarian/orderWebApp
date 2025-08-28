@@ -129,29 +129,34 @@ const RestaurantOrderApp = () => {
   return (
     <>
       <Header cartOpen={cartOpen} setCartOpen={setCartOpen} getTotalItems={getTotalItems} />
-      <div className="container my-4" style={{ paddingBottom: "100px" }}>
 
-        {activePage === "menu" && (
-          <Category
-            menuCategories={menuCategories}
-            activeCategory={activeCategory}
-            setActiveCategory={setActiveCategory}
-          />
-        )}
+      {/* Main content area */}
+      <div style={{ flexGrow: 1, overflowY: 'auto', minHeight: '100vh' }}>
 
         {activePage === "menu" ? (
-          <Menu
-            items={getItemsForCategory(activeCategory)}
-            getQuantityInCart={getQuantityInCart}
-            addToCart={addToCart}
-            removeFromCart={removeFromCart}
-          />
+          // Container for the menu page
+          <div className="container my-4">
+            <Category
+              menuCategories={menuCategories}
+              activeCategory={activeCategory}
+              setActiveCategory={setActiveCategory}
+            />
+            <Menu
+              items={getItemsForCategory(activeCategory)}
+              getQuantityInCart={getQuantityInCart}
+              addToCart={addToCart}
+              removeFromCart={removeFromCart}
+            />
+          </div>
         ) : (
-          <Branches
-            branches={branches}
-            selectedBranch={selectedBranch}
-            setSelectedBranch={setSelectedBranch}
-          />
+          // Full-width for the branches page
+          <div className="my-4">
+            <Branches
+              branches={branches}
+              selectedBranch={selectedBranch}
+              setSelectedBranch={setSelectedBranch}
+            />
+          </div>
         )}
       </div>
 
@@ -181,8 +186,6 @@ const RestaurantOrderApp = () => {
         handleNextStep={handleNextStep}
         branches={branches}
       />
-
-
 
       {/* Notification Toast */}
       {notification.show && (
