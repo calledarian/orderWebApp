@@ -76,8 +76,35 @@ const RestaurantOrderApp = () => {
     if (category === "All") return Object.values(menuItems).flat();
     return menuItems[category] || [];
   };
+  // const getTelegramInitData = () => {
+  //   return new Promise < string | null > ((resolve) => {
+  //     if (window.Telegram?.WebApp?.initData) {
+  //       resolve(window.Telegram.WebApp.initData);
+  //     } else {
+  //       // Poll until available
+  //       const interval = setInterval(() => {
+  //         if (window.Telegram?.WebApp?.initData) {
+  //           clearInterval(interval);
+  //           resolve(window.Telegram.WebApp.initData);
+  //         }
+  //       }, 100);
+  //       // Timeout fallback
+  //       setTimeout(() => {
+  //         clearInterval(interval);
+  //         resolve(null);
+  //       }, 5000);
+  //     }
+  //   });
+  // };
 
-  const handlePlaceOrder = () => {
+
+  const handlePlaceOrder = async () => {
+    // const initData = await getTelegramInitData();
+    // if (!initData) {
+    //   showNotification("Telegram verification failed!", "danger");
+    //   return;
+    // }
+
     const orderSummary = {
       customer: customerInfo,
       items: cart,
@@ -86,12 +113,43 @@ const RestaurantOrderApp = () => {
       paymentMethod,
       timestamp: new Date().toISOString()
     };
-    console.log("Order placed:", orderSummary);
-    showNotification("Order placed successfully!", "success");
-    setCart([]);
-    setOrderModal(false);
-    resetOrderProcess();
+
+    try {
+      const response = await fetch("https://orderwebappserver.onrender.com/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(
+          cart.map(item => ({
+            menuCategory: item.category || activeCategory,
+            menuItem: item.name,
+            quantity: item.quantity,
+            price: item.price,
+            name: customerInfo.name,
+            phone: customerInfo.phone,
+            address: customerInfo.address,
+            note: customerInfo.note,
+            branchId: selectedBranch?.id,
+            qrImage: null
+          }))
+        ),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        showNotification(result.message || "Order sent to Telegram successfully!", "success");
+        setCart([]);
+        setOrderModal(false);
+        resetOrderProcess();
+      } else {
+        showNotification(result.message || "Failed to send order", "danger");
+      }
+    } catch (err) {
+      console.error(err);
+      showNotification("Something went wrong while sending order", "danger");
+    }
   };
+
 
   const handleNextStep = () => {
     if (orderStep === 1) {
