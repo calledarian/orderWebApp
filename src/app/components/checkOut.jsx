@@ -1,4 +1,5 @@
-import React from "react";
+import Image from "next/image";
+import React, { useRef } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 
 export default function CheckOut({
@@ -17,6 +18,8 @@ export default function CheckOut({
     handleNextStep,
     branches
 }) {
+    const fileInputRef = useRef(null);
+
     return (
         <Modal show={orderModal} onHide={() => setOrderModal(false)} centered>
             <Modal.Header closeButton>
@@ -67,22 +70,33 @@ export default function CheckOut({
                 {orderStep === 2 && (
                     <>
                         <h6>Select Branch</h6>
-                        <div className="d-flex flex-column gap-2">
+                        <div className="d-flex flex-column">
                             {branches.map(branch => (
                                 <div
                                     key={branch.id}
-                                    className={`p-2 border branch-card ${selectedBranch?.id === branch.id ? "selected" : ""}`}
                                     onClick={() => setSelectedBranch(branch)}
+                                    style={{
+                                        padding: "1rem",
+                                        border: "1px solid #ccc",
+                                        borderRadius: "5px",
+                                        cursor: "pointer",
+                                        marginBottom: "0.5rem", // spacing between cards
+                                        backgroundColor: selectedBranch?.id === branch.id ? "#0d6efd" : "white",
+                                        color: selectedBranch?.id === branch.id ? "white" : "black",
+                                        display: "flex",
+                                        flexDirection: "column", // make content inside column
+                                        transition: "all 0.2s ease"
+                                    }}
                                 >
                                     <strong>{branch.name}</strong>
-                                    <div className="text-muted small">{branch.address}</div>
+                                    <span className="text-muted small">{branch.address}</span>
                                 </div>
                             ))}
                         </div>
+
                         <Form.Group className="mt-3">
                             <Form.Label>Payment Method</Form.Label>
                             <Form.Select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
-                                <option value="COD">Cash on Delivery</option>
                                 <option value="QR">QR Payment</option>
                             </Form.Select>
                         </Form.Group>
@@ -90,12 +104,37 @@ export default function CheckOut({
                 )}
 
                 {orderStep === 3 && paymentMethod === "QR" && (
-                    <>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem" }}>
                         <h6>Upload Payment Screenshot</h6>
-                        <Button variant="outline-dark" onClick={handleFileUpload}>Upload Screenshot</Button>
-                        {qrUploaded && <div className="mt-2 text-success">Uploaded successfully!</div>}
-                    </>
+
+                        <Image
+                            src="/logo/turkish_head.jpg"
+                            alt="QR Code"
+                            width={300}
+                            height={300}
+                        />
+
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            style={{ display: "none" }}
+                            onChange={handleFileUpload}
+                            accept="image/*"
+                        />
+
+                        <Button
+                            variant="outline-dark"
+                            onClick={() => fileInputRef.current && fileInputRef.current.click()}
+                        >
+                            Upload Screenshot
+                        </Button>
+
+                        {qrUploaded && (
+                            <div className="mt-2 text-success">Uploaded successfully!</div>
+                        )}
+                    </div>
                 )}
+
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={() => {
@@ -105,7 +144,7 @@ export default function CheckOut({
                     Back
                 </Button>
                 <Button variant="primary" onClick={handleNextStep}>
-                    {orderStep === 2 && paymentMethod === "COD" ? "Place Order" : (orderStep === 3 ? "Place Order" : "Next")}
+                    {orderStep === 2 && paymentMethod === "QR" ? "Place Order" : (orderStep === 3 ? "Place Order" : "Next")}
                 </Button>
             </Modal.Footer>
         </Modal>
