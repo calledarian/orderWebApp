@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Alert } from "react-bootstrap";
 import Header from "./components/header";
@@ -162,6 +162,7 @@ const RestaurantOrderApp = () => {
   const [cart, setCart] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [orderModal, setOrderModal] = useState(false);
+  const [userId, setUserId] = useState(null);
   const [customerInfo, setCustomerInfo] = useState({
     name: "",
     phone: "",
@@ -226,27 +227,56 @@ const RestaurantOrderApp = () => {
     return menuItems[category] || [];
   };
 
+  useEffect(() => {
+    // Check if the window object and Telegram WebApp are available
+    if (typeof window !== "undefined" && window.Telegram?.WebApp) {
+      const tg = window.Telegram.WebApp;
+
+      // Log the entire initDataUnsafe object for debugging
+      console.log("Full Telegram initDataUnsafe object:", tg.initDataUnsafe);
+
+      const user = tg.initDataUnsafe.user;
+
+      if (user?.id) {
+        setUserId(user.id);
+        console.log("✅ Successfully retrieved Telegram ID:", user.id);
+      } else {
+        console.log("❌ Telegram user ID not found in initDataUnsafe.");
+      }
+    } else {
+      console.log("❌ Not running in a Telegram WebApp environment.");
+    }
+  }, []);
+
   const handlePlaceOrder = async () => {
+    if (!userId) {
+      showNotification("Cannot place order: Telegram ID not found", "danger");
+      return;
+    }
+
     try {
       const response = await fetch(
         "https://orderwebappserver.onrender.com/order",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(
-            cart.map((item) => ({
+          body: JSON.stringify({
+            telegramId: userId,
+            items: cart.map((item) => ({
               menuCategory: item.category || activeCategory,
               menuItem: item.name,
               quantity: item.quantity,
               price: item.price,
+            })),
+            customerInfo: {
               name: customerInfo.name,
               phone: customerInfo.phone,
               address: customerInfo.address,
               note: customerInfo.note,
-              branchId: selectedBranch?.id,
-              qrImage: qrUrl || null,
-            }))
-          ),
+            },
+            branchId: selectedBranch?.id,
+            qrImage: qrUrl || null,
+          }),
         }
       );
 
@@ -268,6 +298,7 @@ const RestaurantOrderApp = () => {
       showNotification("Something went wrong while sending order", "danger");
     }
   };
+
 
   const handleNextStep = () => {
     if (orderStep === 1) {
