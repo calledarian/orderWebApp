@@ -24,7 +24,7 @@ const RestaurantOrderApp = () => {
         price: 8.5,
         rating: 4.8,
         image:
-          "https://images.unsplash.com/photo-1529006557810-274b9b2fc783?w=400&h=300&fit=crop",
+          "https://images.unsplash.com/photo-1734772591537-15ac1b3b3c04?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8Y2hpY2tlbiUyMHNoYXdhcm1hfGVufDB8fDB8fHww",
       },
       {
         id: 2,
@@ -33,7 +33,16 @@ const RestaurantOrderApp = () => {
         price: 9.5,
         rating: 4.9,
         image:
-          "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop",
+          "https://images.unsplash.com/photo-1642783944285-b33b18ef6c3b?w=500&auto=format&fit=crop&q=60",
+      },
+      {
+        id: 3,
+        name: "Lamb Shawarma",
+        description: "Juicy lamb with spices and fresh veggies",
+        price: 10.0,
+        rating: 4.7,
+        image:
+          "https://images.unsplash.com/photo-1644615988562-31d2e98fb6b7?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bGFtYiUyMHNoYXdhcm1hfGVufDB8fDB8fHww",
       },
     ],
     Burgers: [
@@ -44,32 +53,87 @@ const RestaurantOrderApp = () => {
         price: 7.5,
         rating: 4.6,
         image:
-          "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop",
+          "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&auto=format&fit=crop&q=60",
+      },
+      {
+        id: 5,
+        name: "Cheeseburger",
+        description: "Beef patty with cheddar cheese",
+        price: 8.0,
+        rating: 4.5,
+        image:
+          "https://images.unsplash.com/photo-1748955308760-8339b52f9c62?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8Y2hlc3NidXJnZXJ8ZW58MHx8MHx8fDA%3D",
+      },
+      {
+        id: 6,
+        name: "Veggie Burger",
+        description: "Grilled vegetables with vegan patty",
+        price: 7.0,
+        rating: 4.3,
+        image:
+          "https://images.unsplash.com/photo-1520072959219-c595dc870360?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dmVnZ2llJTIwYnVyZ2VyfGVufDB8fDB8fHww",
       },
     ],
     Pizza: [
       {
-        id: 6,
+        id: 7,
         name: "Margherita",
         description: "Classic tomato and mozzarella",
         price: 12.0,
         rating: 4.4,
         image:
-          "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop",
+          "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=500&auto=format&fit=crop&q=60",
+      },
+      {
+        id: 8,
+        name: "Pepperoni Pizza",
+        description: "Loaded with pepperoni slices",
+        price: 14.0,
+        rating: 4.6,
+        image:
+          "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGVwcGVyb25pJTIwcGl6emF8ZW58MHx8MHx8fDA%3D",
+      },
+      {
+        id: 9,
+        name: "BBQ Chicken Pizza",
+        description: "Grilled chicken with BBQ sauce",
+        price: 15.0,
+        rating: 4.7,
+        image:
+          "https://plus.unsplash.com/premium_photo-1672498193372-2b91ef813252?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8YmJxJTIwY2hpY2tlbiUyMHBpenphfGVufDB8fDB8fHww",
       },
     ],
     Drinks: [
       {
-        id: 8,
+        id: 10,
         name: "Turkish Tea",
         description: "Traditional black tea",
         price: 2.5,
         rating: 4.7,
         image:
-          "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=400&h=300&fit=crop",
+          "https://plus.unsplash.com/premium_photo-1676232731729-c06e936bbd96?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      },
+      {
+        id: 11,
+        name: "Fresh Lemonade",
+        description: "Refreshing lemon drink",
+        price: 3.0,
+        rating: 4.5,
+        image:
+          "https://plus.unsplash.com/premium_photo-1690291030264-108119cd2eea?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8ZnJlc2glMjBsZW1vbmFkZXxlbnwwfHwwfHx8MA%3D%3D",
+      },
+      {
+        id: 12,
+        name: "Orange Juice",
+        description: "Freshly squeezed oranges",
+        price: 3.5,
+        rating: 4.6,
+        image:
+          "https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8b3JhbmdlJTIwanVpY2V8ZW58MHx8MHx8fDA%3D",
       },
     ],
   };
+
 
   const branches = [
     {

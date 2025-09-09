@@ -287,8 +287,6 @@ export default function CheckOut({
                                             borderRadius: "8px",
                                             cursor: "pointer",
                                             marginBottom: "0.5rem",
-                                            backgroundColor: selectedBranch?.id === branch.id ? "#0d6efd" : "white",
-                                            color: selectedBranch?.id === branch.id ? "white" : "black",
                                             display: "flex",
                                             flexDirection: "column",
                                             transition: "all 0.2s ease",
@@ -306,7 +304,7 @@ export default function CheckOut({
                                         }}
                                     >
                                         <strong>{branch.name}</strong>
-                                        <span className={selectedBranch?.id === branch.id ? "text-light" : "text-muted"} style={{ fontSize: "0.9em" }}>
+                                        <span className={selectedBranch?.id === branch.id ? "text-black" : "text-muted"} style={{ fontSize: "0.9em" }}>
                                             {branch.address}
                                         </span>
                                         {selectedBranch?.id === branch.id && (
@@ -347,7 +345,7 @@ export default function CheckOut({
 
                         <div style={{ border: "2px dashed #ccc", padding: "1rem", borderRadius: "8px", textAlign: "center" }}>
                             <Image
-                                src="/logo/turkish_head.jpg"
+                                src="/qr/qr.png"
                                 alt="QR Code"
                                 width={250}
                                 height={250}
@@ -371,12 +369,12 @@ export default function CheckOut({
                             onClick={() => fileInputRef.current && fileInputRef.current.click()}
                             size="lg"
                         >
-                            {qrUploaded ? "✓ Screenshot Uploaded" : "📷 Upload Payment Screenshot"}
+                            {qrUploaded ? "✓ Screenshot Uploaded" : " Upload Payment Screenshot"}
                         </Button>
 
                         <div className="text-muted small text-center">
                             Supported formats: JPEG, PNG, GIF<br/>
-                            Maximum file size: 5MB
+                            Maximum file size: 10MB
                         </div>
 
                         {qrUploaded && (

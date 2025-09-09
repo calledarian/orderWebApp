@@ -11,7 +11,7 @@ export default function Menu({
     removeFromCart
 }) {
     return (
-        <div className="row g-3">
+        <div className="row g-3 mb-5">
             {items.map((item) => (
                 <div className="col-12 col-md-6 col-lg-4" key={item.id}>
                     <div className="card h-100 border-0 card-menu-item">

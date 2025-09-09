@@ -9,7 +9,6 @@ const Branches = ({ branches, selectedBranch, setSelectedBranch }) => (
                 className={`
                     p-3 border rounded m-2 d-flex justify-content-between align-items-center
                     transition-transform duration-300 ease-in-out
-                    hover:shadow-lg hover:scale-105
                     ${selectedBranch?.id === branch.id ? "bg-primary text-white shadow-xl scale-105" : ""}
                 `}
                 onClick={() => setSelectedBranch(branch)}
