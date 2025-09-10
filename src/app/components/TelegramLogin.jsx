@@ -3,12 +3,18 @@
 import { useState, useEffect } from "react";
 
 export default function TelegramLogin({ setUserId }) {
-    const [user, setUser] = useState(() => {
-        const stored = localStorage.getItem("telegramUser");
-        return stored ? JSON.parse(stored) : null;
-    });
+    const [user, setUser] = useState(null);
+    const [isClient, setIsClient] = useState(false); // Track if running on client
 
     useEffect(() => {
+        setIsClient(true); // Now we are on client
+        const stored = localStorage.getItem("telegramUser");
+        if (stored) {
+            const parsed = JSON.parse(stored);
+            setUser(parsed);
+            setUserId(parsed.id);
+        }
+
         // Telegram auth callback
         window.onTelegramAuth = (user) => {
             console.log("Logged in:", user);
@@ -19,7 +25,7 @@ export default function TelegramLogin({ setUserId }) {
     }, [setUserId]);
 
     const handleLoginClick = () => {
-        // Remove any existing script to prevent duplicates
+        // Remove old script to prevent duplicates
         const oldScript = document.getElementById("telegram-login-script");
         if (oldScript) oldScript.remove();
 
@@ -35,7 +41,8 @@ export default function TelegramLogin({ setUserId }) {
         document.body.appendChild(script);
     };
 
-    if (user) return null; // Hide button if already logged in
+    // Only render on client to avoid SSR issues
+    if (!isClient || user) return null;
 
     return (
         <button
@@ -57,7 +64,6 @@ export default function TelegramLogin({ setUserId }) {
             title="Login with Telegram"
         >
             Telegram Login
-
         </button>
     );
 }
