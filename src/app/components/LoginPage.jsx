@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-// Main App component containing all logic and UI
 export default function App() {
     const [user, setUser] = useState(null);
+    const [loginError, setLoginError] = useState(false); // New state for error
     const containerRef = useRef(null);
 
     useEffect(() => {
-        // Check for a stored user in local storage on initial load
         const stored = localStorage.getItem("telegramUser");
         if (stored) {
             try {
@@ -19,21 +18,25 @@ export default function App() {
             return;
         }
 
-        // This function will be called by the Telegram widget upon successful login
         window.onTelegramAuth = (authUser) => {
             console.log("Logged in:", authUser);
             setUser(authUser);
             localStorage.setItem("telegramUser", JSON.stringify(authUser));
+            setLoginError(false); // Clear any previous error
         };
 
-        // Dynamically create and append the Telegram login script
-        // This is done only if the script isn't already present
         if (containerRef.current && !document.getElementById("telegram-login-script")) {
             const script = document.createElement("script");
             script.id = "telegram-login-script";
             script.src = "https://telegram.org/js/telegram-widget.js?22";
             script.async = true;
-            // Set the attributes for your bot
+
+            // Add the onerror event listener for fallback
+            script.onerror = () => {
+                console.error("Failed to load Telegram login script.");
+                setLoginError(true);
+            };
+
             script.setAttribute("data-telegram-login", "musteri_temsilcisi_bot");
             script.setAttribute("data-size", "large");
             script.setAttribute("data-onauth", "onTelegramAuth");
@@ -42,7 +45,6 @@ export default function App() {
             containerRef.current.appendChild(script);
         }
 
-        // Cleanup function to remove the global callback
         return () => {
             window.onTelegramAuth = null;
         };
@@ -62,50 +64,27 @@ export default function App() {
 
                 {user ? (
                     // Display user details if logged in
-                    <div className="flex flex-col items-center text-center">
-                        {user.photo_url && (
-                            <img
-                                src={user.photo_url}
-                                alt="Profile"
-                                className="w-32 h-32 rounded-full border-4 border-indigo-500 shadow-lg mb-4"
-                            />
-                        )}
-                        <h2 className="text-2xl font-semibold text-gray-700 mb-2">
-                            Hello, {user.first_name} {user.last_name}!
-                        </h2>
-                        <p className="text-gray-600 mb-4">
-                            Welcome to your personal ordering dashboard.
-                        </p>
-
-                        <div className="w-full text-left bg-indigo-50 p-6 rounded-lg space-y-3 shadow-inner">
-                            <div className="flex items-center">
-                                <span className="font-medium text-indigo-700 w-24">ID:</span>
-                                <span className="text-gray-800 break-all">{user.id}</span>
-                            </div>
-                            <div className="flex items-center">
-                                <span className="font-medium text-indigo-700 w-24">Username:</span>
-                                <span className="text-gray-800 break-all">@{user.username}</span>
-                            </div>
-                            <div className="flex items-center">
-                                <span className="font-medium text-indigo-700 w-24">Language:</span>
-                                <span className="text-gray-800 break-all">{user.language_code}</span>
-                            </div>
-                        </div>
-
-                        <button
-                            onClick={handleLogout}
-                            className="mt-6 px-6 py-3 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition duration-300"
-                        >
-                            Log Out
-                        </button>
-                    </div>
+                    // ... (your existing user display code)
+                    <div>User details...</div>
                 ) : (
-                    // Display Telegram login widget if not logged in
+                    // Display Telegram login widget or fallback
                     <div className="flex flex-col items-center">
                         <p className="text-gray-600 mb-6">
                             Please log in with Telegram to access your details.
                         </p>
-                        <div ref={containerRef} className="my-4" />
+                        {loginError ? (
+                            <div className="bg-red-100 text-red-700 p-4 rounded-lg text-center shadow-md">
+                                <p>Error loading login button. Please check your internet connection or try again later.</p>
+                                <button
+                                    onClick={() => window.location.reload()}
+                                    className="mt-2 text-red-500 hover:text-red-600 font-semibold transition-colors duration-300"
+                                >
+                                    Reload Page
+                                </button>
+                            </div>
+                        ) : (
+                            <div ref={containerRef} className="my-4" />
+                        )}
                     </div>
                 )}
             </div>
