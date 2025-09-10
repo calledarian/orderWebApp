@@ -165,7 +165,7 @@ const RestaurantOrderApp = () => {
   const [orderModal, setOrderModal] = useState(false);
   const [userId, setUserId] = useState(null);
   const [customerInfo, setCustomerInfo] = useState({
-    name: telegramUser?.first_name || "",
+    name: "",
     phone: "",
     address: "",
     note: "",
