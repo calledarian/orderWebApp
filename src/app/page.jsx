@@ -10,6 +10,8 @@ import OffCanvas from "./components/offCanvas";
 import CheckOut from "./components/checkOut";
 import LabelBottomNavigation from "./components/BottomNavigation";
 import Branches from "./components/branches";
+import TelegramLogin from "./components/TelegramLogin";
+import TelegramLoginModal from "./components/TelegramModal";
 
 const RestaurantOrderApp = () => {
   // --- Data ---
@@ -227,53 +229,28 @@ const RestaurantOrderApp = () => {
     return menuItems[category] || [];
   };
 
-  useEffect(() => {
-    // Check if the window object and Telegram WebApp are available
-    if (typeof window !== "undefined" && window.Telegram?.WebApp) {
-      const tg = window.Telegram.WebApp;
-
-      // Log the entire initDataUnsafe object for debugging
-      console.log("Full Telegram initDataUnsafe object:", tg.initDataUnsafe);
-
-      const user = tg.initDataUnsafe.user;
-
-      if (user?.id) {
-        setUserId(user.id);
-        console.log("✅ Successfully retrieved Telegram ID:", user.id);
-      } else {
-        console.log("❌ Telegram user ID not found in initDataUnsafe.");
-      }
-    } else {
-      console.log("❌ Not running in a Telegram WebApp environment.");
-    }
-  }, []);
-
   const handlePlaceOrder = async () => {
-    if (!userId) {
-      showNotification("Cannot place order: Telegram ID not found", "danger");
-      return;
-    }
-
     try {
+      const telegramUser = JSON.parse(localStorage.getItem("telegramUser"));
+      if (!telegramUser) {
+        showNotification("Please log in with Telegram before placing order", "danger");
+        return;
+      }
+
       const response = await fetch(
         "https://orderwebappserver.onrender.com/order",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            telegramId: userId,
+            telegram: telegramUser, // full auth object for backend validation
             items: cart.map((item) => ({
               menuCategory: item.category || activeCategory,
               menuItem: item.name,
               quantity: item.quantity,
               price: item.price,
             })),
-            customerInfo: {
-              name: customerInfo.name,
-              phone: customerInfo.phone,
-              address: customerInfo.address,
-              note: customerInfo.note,
-            },
+            customerInfo,
             branchId: selectedBranch?.id,
             qrImage: qrUrl || null,
           }),
@@ -298,6 +275,7 @@ const RestaurantOrderApp = () => {
       showNotification("Something went wrong while sending order", "danger");
     }
   };
+
 
 
   const handleNextStep = () => {
@@ -368,9 +346,16 @@ const RestaurantOrderApp = () => {
       3000
     );
   };
+  useEffect(() => {
+    const storedUser = localStorage.getItem("telegramUser");
+    if (storedUser) {
+      setUserId(JSON.parse(storedUser).id);
+    }
+  }, []);
 
   return (
     <>
+      <TelegramLoginModal userId={userId} setUserId={setUserId} />
       <Header
         cartOpen={cartOpen}
         setCartOpen={setCartOpen}
