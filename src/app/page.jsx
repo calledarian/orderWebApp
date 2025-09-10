@@ -165,7 +165,7 @@ const RestaurantOrderApp = () => {
   const [orderModal, setOrderModal] = useState(false);
   const [userId, setUserId] = useState(null);
   const [customerInfo, setCustomerInfo] = useState({
-    name: "",
+    name: telegramUser?.first_name || "",
     phone: "",
     address: "",
     note: "",
@@ -181,6 +181,18 @@ const RestaurantOrderApp = () => {
   const [qrUploaded, setQrUploaded] = useState(false);
   const [qrUrl, setQrUrl] = useState("");
 
+  useEffect(() => {
+    const storedUser = localStorage.getItem("telegramUser");
+    if (storedUser) {
+      const telegramUser = JSON.parse(storedUser);
+      setUserId(telegramUser.id);
+      setCustomerInfo((prev) => ({
+        ...prev,
+        name: telegramUser.first_name || "",
+      }));
+      console.log("Loaded user from localStorage:", telegramUser);
+    }
+  }, []);
   // --- Core Functions ---
   const addToCart = (item) => {
     const existingItem = cart.find((cartItem) => cartItem.id === item.id);
