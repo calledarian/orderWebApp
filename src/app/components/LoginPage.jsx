@@ -1,93 +1,102 @@
-import React, { useState, useEffect, useRef } from 'react';
+"use client";
 
-export default function App() {
+import React, { useEffect, useState } from "react";
+import { Paper, Typography, Avatar, Grid } from "@mui/material";
+import "bootstrap/dist/css/bootstrap.min.css";
+
+export default function LoginPage({ setUserId }) {
     const [user, setUser] = useState(null);
-    const [loginError, setLoginError] = useState(false); // New state for error
-    const containerRef = useRef(null);
 
     useEffect(() => {
-        const stored = localStorage.getItem("telegramUser");
-        if (stored) {
-            try {
-                const parsedUser = JSON.parse(stored);
-                setUser(parsedUser);
-            } catch (e) {
-                console.error("Failed to parse user from localStorage", e);
-                localStorage.removeItem("telegramUser");
-            }
-            return;
-        }
-
-        window.onTelegramAuth = (authUser) => {
-            console.log("Logged in:", authUser);
-            setUser(authUser);
-            localStorage.setItem("telegramUser", JSON.stringify(authUser));
-            setLoginError(false); // Clear any previous error
+        window.onTelegramAuth = (tgUser) => {
+            setUser(tgUser);
+            setUserId(tgUser.id);
+            localStorage.setItem("telegramUser", JSON.stringify(tgUser));
         };
 
-        if (containerRef.current && !document.getElementById("telegram-login-script")) {
+        if (!document.getElementById("telegram-login-script")) {
             const script = document.createElement("script");
             script.id = "telegram-login-script";
             script.src = "https://telegram.org/js/telegram-widget.js?22";
             script.async = true;
-
-            // Add the onerror event listener for fallback
-            script.onerror = () => {
-                console.error("Failed to load Telegram login script.");
-                setLoginError(true);
-            };
-
             script.setAttribute("data-telegram-login", "musteri_temsilcisi_bot");
             script.setAttribute("data-size", "large");
             script.setAttribute("data-onauth", "onTelegramAuth");
             script.setAttribute("data-request-access", "write");
-
-            containerRef.current.appendChild(script);
+            document
+                .getElementById("telegram-login-container")
+                .appendChild(script);
         }
 
-        return () => {
-            window.onTelegramAuth = null;
-        };
-    }, []);
+        const storedUser = localStorage.getItem("telegramUser");
+        if (storedUser) setUser(JSON.parse(storedUser));
+    }, [setUserId]);
 
-    const handleLogout = () => {
-        localStorage.removeItem("telegramUser");
-        setUser(null);
-    };
+    if (!user) {
+        return (
+            <div
+                id="telegram-login-container"
+                className="d-flex justify-content-center align-items-center vh-100"
+            ></div>
+        );
+    }
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
-            <div className="w-full max-w-lg bg-white p-8 rounded-2xl shadow-xl transition-all duration-500 ease-in-out transform hover:scale-105">
-                <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
-                    KYC Ordering App
-                </h1>
+        <div className="d-flex justify-content-center align-items-center vh-100">
+            <Grid container spacing={3} justifyContent="center" maxWidth={600}>
+                <Grid item xs={12}>
+                    <Typography variant="h4" align="center" gutterBottom>
+                        Your Profile
+                    </Typography>
+                </Grid>
 
-                {user ? (
-                    // Display user details if logged in
-                    // ... (your existing user display code)
-                    <div>User details...</div>
-                ) : (
-                    // Display Telegram login widget or fallback
-                    <div className="flex flex-col items-center">
-                        <p className="text-gray-600 mb-6">
-                            Please log in with Telegram to access your details.
-                        </p>
-                        {loginError ? (
-                            <div className="bg-red-100 text-red-700 p-4 rounded-lg text-center shadow-md">
-                                <p>Error loading login button. Please check your internet connection or try again later.</p>
-                                <button
-                                    onClick={() => window.location.reload()}
-                                    className="mt-2 text-red-500 hover:text-red-600 font-semibold transition-colors duration-300"
-                                >
-                                    Reload Page
-                                </button>
-                            </div>
-                        ) : (
-                            <div ref={containerRef} className="my-4" />
-                        )}
-                    </div>
+                <Grid item xs={12} sm={6}>
+                    <Paper elevation={3} className="p-3 text-center">
+                        <Typography variant="subtitle1">User ID</Typography>
+                        <Typography variant="body1">{user.id}</Typography>
+                    </Paper>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                    <Paper elevation={3} className="p-3 text-center">
+                        <Typography variant="subtitle1">First Name</Typography>
+                        <Typography variant="body1">{user.first_name}</Typography>
+                    </Paper>
+                </Grid>
+
+                {user.last_name && (
+                    <Grid item xs={12} sm={6}>
+                        <Paper elevation={3} className="p-3 text-center">
+                            <Typography variant="subtitle1">Last Name</Typography>
+                            <Typography variant="body1">{user.last_name}</Typography>
+                        </Paper>
+                    </Grid>
                 )}
-            </div>
+
+                {user.username && (
+                    <Grid item xs={12} sm={6}>
+                        <Paper elevation={3} className="p-3 text-center">
+                            <Typography variant="subtitle1">Username</Typography>
+                            <Typography variant="body1">@{user.username}</Typography>
+                        </Paper>
+                    </Grid>
+                )}
+
+                {user.photo_url && (
+                    <Grid item xs={12}>
+                        <Paper elevation={3} className="p-3 text-center">
+                            <Typography variant="subtitle1" gutterBottom>
+                                Profile Photo
+                            </Typography>
+                            <Avatar
+                                alt="Profile"
+                                src={user.photo_url}
+                                sx={{ width: 100, height: 100, margin: "0 auto" }}
+                            />
+                        </Paper>
+                    </Grid>
+                )}
+            </Grid>
         </div>
     );
 }
