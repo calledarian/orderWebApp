@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Paper, Typography, Avatar, Grid } from "@mui/material";
+import { Paper, Typography, Avatar, Grid, Box } from "@mui/material";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function LoginPage({ setUserId }) {
     const [user, setUser] = useState(null);
+    const [widgetLoaded, setWidgetLoaded] = useState(false);
 
     useEffect(() => {
         // Load user from localStorage
@@ -16,9 +17,8 @@ export default function LoginPage({ setUserId }) {
             setUserId(tgUser.id);
         }
 
-        // Telegram auth callback must exist before widget loads
+        // Telegram auth callback
         window.onTelegramAuth = (tgUser) => {
-            console.log("Telegram auth callback:", tgUser);
             setUser(tgUser);
             setUserId(tgUser.id);
             localStorage.setItem("telegramUser", JSON.stringify(tgUser));
@@ -28,28 +28,44 @@ export default function LoginPage({ setUserId }) {
         if (!document.getElementById("telegram-login-script")) {
             const script = document.createElement("script");
             script.id = "telegram-login-script";
-            script.src = "https://telegram.org/js/telegram-widget.js"; // remove ?22
+            script.src = "https://telegram.org/js/telegram-widget.js";
             script.async = true;
-            script.setAttribute("data-telegram-login", "musteri_temsilcisi_bot");
+            script.setAttribute("data-telegram-login", "musteri_temsilcisi_bot"); // your bot username
             script.setAttribute("data-size", "large");
             script.setAttribute("data-onauth", "onTelegramAuth");
             script.setAttribute("data-request-access", "write");
+            script.onload = () => setWidgetLoaded(true);
             document.getElementById("telegram-login-container").appendChild(script);
+        } else {
+            setWidgetLoaded(true);
         }
     }, [setUserId]);
 
     if (!user) {
         return (
-            <div
-                id="telegram-login-container"
+            <Box
                 className="d-flex justify-content-center align-items-center vh-100"
-            ></div>
+                flexDirection="column"
+            >
+                <Typography variant="h5" gutterBottom>
+                    Login with Telegram
+                </Typography>
+                <div
+                    id="telegram-login-container"
+                    className="d-flex justify-content-center"
+                ></div>
+                {!widgetLoaded && (
+                    <Typography variant="body2" color="textSecondary" className="mt-2">
+                        Loading Telegram widget...
+                    </Typography>
+                )}
+            </Box>
         );
     }
 
     // Profile view
     return (
-        <div className="d-flex justify-content-center align-items-center vh-100">
+        <Box className="d-flex justify-content-center align-items-center vh-100">
             <Grid container spacing={3} justifyContent="center" maxWidth={600}>
                 <Grid item xs={12}>
                     <Typography variant="h4" align="center" gutterBottom>
@@ -104,6 +120,6 @@ export default function LoginPage({ setUserId }) {
                     </Grid>
                 )}
             </Grid>
-        </div>
+        </Box>
     );
 }
