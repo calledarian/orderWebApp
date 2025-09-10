@@ -1,68 +1,55 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Paper, Typography, Avatar, Grid, Box } from "@mui/material";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { Paper, Typography, Avatar, Grid, CircularProgress } from "@mui/material";
 
 export default function LoginPage({ setUserId }) {
     const [user, setUser] = useState(null);
-    const [widgetLoaded, setWidgetLoaded] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Define callback first
+        // 1️⃣ Define Telegram callback first
         window.onTelegramAuth = (tgUser) => {
-            console.log("Telegram auth callback:", tgUser);
+            console.log("Telegram auth callback:", tgUser); // must appear in console
             setUser(tgUser);
             setUserId(tgUser.id);
             localStorage.setItem("telegramUser", JSON.stringify(tgUser));
         };
 
-        // Only load script once
+        // 2️⃣ Load Telegram widget script only once
         if (!document.getElementById("telegram-login-script")) {
             const script = document.createElement("script");
             script.id = "telegram-login-script";
             script.src = "https://telegram.org/js/telegram-widget.js?22";
             script.async = true;
+            script.onload = () => setLoading(false); // hide loading spinner
             script.setAttribute("data-telegram-login", "musteri_temsilcisi_bot");
             script.setAttribute("data-size", "large");
-            script.setAttribute("data-onauth", "onTelegramAuth"); // callback must exist before script loads
+            script.setAttribute("data-onauth", "onTelegramAuth");
             script.setAttribute("data-request-access", "write");
-            document
-                .getElementById("telegram-login-container")
-                .appendChild(script);
+            document.getElementById("telegram-login-container").appendChild(script);
+        } else {
+            setLoading(false);
         }
 
-        // Load existing user
+        // 3️⃣ Load stored user if already logged in
         const storedUser = localStorage.getItem("telegramUser");
         if (storedUser) setUser(JSON.parse(storedUser));
-    }, []);
-
+    }, [setUserId]);
 
     if (!user) {
+        // Telegram login container
         return (
-            <Box
-                className="d-flex justify-content-center align-items-center vh-100"
-                flexDirection="column"
-            >
-                <Typography variant="h5" gutterBottom>
-                    Login with Telegram
-                </Typography>
-                <div
-                    id="telegram-login-container"
-                    className="d-flex justify-content-center"
-                ></div>
-                {!widgetLoaded && (
-                    <Typography variant="body2" color="textSecondary" className="mt-2">
-                        Loading Telegram widget...
-                    </Typography>
-                )}
-            </Box>
+            <div className="d-flex flex-column justify-content-center align-items-center vh-100">
+                {loading && <CircularProgress />}
+                <div id="telegram-login-container" className="mt-3"></div>
+            </div>
         );
     }
 
-    // Profile view
+    // Profile view after login
     return (
-        <Box className="d-flex justify-content-center align-items-center vh-100">
+        <div className="d-flex justify-content-center align-items-center vh-100">
             <Grid container spacing={3} justifyContent="center" maxWidth={600}>
                 <Grid item xs={12}>
                     <Typography variant="h4" align="center" gutterBottom>
@@ -117,6 +104,6 @@ export default function LoginPage({ setUserId }) {
                     </Grid>
                 )}
             </Grid>
-        </Box>
+        </div>
     );
 }
