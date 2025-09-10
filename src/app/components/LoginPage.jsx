@@ -7,32 +7,36 @@ import "bootstrap/dist/css/bootstrap.min.css";
 export default function LoginPage({ setUserId }) {
     const [user, setUser] = useState(null);
 
-    // Telegram callback must be global
-    window.onTelegramAuth = (tgUser) => {
-        console.log("Telegram auth callback:", tgUser);
-        setUser(tgUser);
-        setUserId(tgUser.id);
-        localStorage.setItem("telegramUser", JSON.stringify(tgUser));
-    };
-
     useEffect(() => {
+        // Load user from localStorage
+        const storedUser = localStorage.getItem("telegramUser");
+        if (storedUser) {
+            const tgUser = JSON.parse(storedUser);
+            setUser(tgUser);
+            setUserId(tgUser.id);
+        }
+
+        // Telegram auth callback must exist before widget loads
+        window.onTelegramAuth = (tgUser) => {
+            console.log("Telegram auth callback:", tgUser);
+            setUser(tgUser);
+            setUserId(tgUser.id);
+            localStorage.setItem("telegramUser", JSON.stringify(tgUser));
+        };
+
         // Load Telegram widget script only once
         if (!document.getElementById("telegram-login-script")) {
             const script = document.createElement("script");
             script.id = "telegram-login-script";
-            script.src = "https://telegram.org/js/telegram-widget.js?22";
+            script.src = "https://telegram.org/js/telegram-widget.js"; // remove ?22
             script.async = true;
-            script.setAttribute("data-telegram-login", "musteri_temsilcisi_bot"); // your bot
+            script.setAttribute("data-telegram-login", "musteri_temsilcisi_bot");
             script.setAttribute("data-size", "large");
             script.setAttribute("data-onauth", "onTelegramAuth");
             script.setAttribute("data-request-access", "write");
             document.getElementById("telegram-login-container").appendChild(script);
         }
-
-        // Load user if already logged in
-        const storedUser = localStorage.getItem("telegramUser");
-        if (storedUser) setUser(JSON.parse(storedUser));
-    }, []);
+    }, [setUserId]);
 
     if (!user) {
         return (
