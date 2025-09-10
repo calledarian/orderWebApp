@@ -7,30 +7,32 @@ import "bootstrap/dist/css/bootstrap.min.css";
 export default function LoginPage({ setUserId }) {
     const [user, setUser] = useState(null);
 
-    useEffect(() => {
-        window.onTelegramAuth = (tgUser) => {
-            setUser(tgUser);
-            setUserId(tgUser.id);
-            localStorage.setItem("telegramUser", JSON.stringify(tgUser));
-        };
+    // Telegram callback must be global
+    window.onTelegramAuth = (tgUser) => {
+        console.log("Telegram auth callback:", tgUser);
+        setUser(tgUser);
+        setUserId(tgUser.id);
+        localStorage.setItem("telegramUser", JSON.stringify(tgUser));
+    };
 
+    useEffect(() => {
+        // Load Telegram widget script only once
         if (!document.getElementById("telegram-login-script")) {
             const script = document.createElement("script");
             script.id = "telegram-login-script";
             script.src = "https://telegram.org/js/telegram-widget.js?22";
             script.async = true;
-            script.setAttribute("data-telegram-login", "musteri_temsilcisi_bot");
+            script.setAttribute("data-telegram-login", "musteri_temsilcisi_bot"); // your bot
             script.setAttribute("data-size", "large");
             script.setAttribute("data-onauth", "onTelegramAuth");
             script.setAttribute("data-request-access", "write");
-            document
-                .getElementById("telegram-login-container")
-                .appendChild(script);
+            document.getElementById("telegram-login-container").appendChild(script);
         }
 
+        // Load user if already logged in
         const storedUser = localStorage.getItem("telegramUser");
         if (storedUser) setUser(JSON.parse(storedUser));
-    }, [setUserId]);
+    }, []);
 
     if (!user) {
         return (
@@ -41,6 +43,7 @@ export default function LoginPage({ setUserId }) {
         );
     }
 
+    // Profile view
     return (
         <div className="d-flex justify-content-center align-items-center vh-100">
             <Grid container spacing={3} justifyContent="center" maxWidth={600}>
