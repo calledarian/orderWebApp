@@ -11,7 +11,6 @@ import CheckOut from "./components/checkOut";
 import LabelBottomNavigation from "./components/BottomNavigation";
 import Branches from "./components/branches";
 import TelegramLogin from "./components/TelegramLogin";
-import TelegramLoginModal from "./components/TelegramModal";
 
 const RestaurantOrderApp = () => {
   // --- Data ---
@@ -355,7 +354,7 @@ const RestaurantOrderApp = () => {
 
   return (
     <>
-      <TelegramLoginModal userId={userId} setUserId={setUserId} />
+      <TelegramLogin setUserId={setUserId} />
       <Header
         cartOpen={cartOpen}
         setCartOpen={setCartOpen}
