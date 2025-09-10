@@ -3,6 +3,7 @@ import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
+import PermIdentityIcon from '@mui/icons-material/PermIdentity';
 
 export default function LabelBottomNavigation({ currentPage, setCurrentPage }) {
     const handleChange = (event, newValue) => {
@@ -23,6 +24,7 @@ export default function LabelBottomNavigation({ currentPage, setCurrentPage }) {
         >
             <BottomNavigationAction label="Menu" value="menu" icon={<RestaurantMenuIcon />} />
             <BottomNavigationAction label="Location" value="branches" icon={<LocationOnIcon />} />
+            <BottomNavigationAction label="Login" value="login" icon={<PermIdentityIcon />} />
         </BottomNavigation>
     );
 }

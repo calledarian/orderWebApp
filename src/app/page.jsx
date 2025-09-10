@@ -10,7 +10,7 @@ import OffCanvas from "./components/offCanvas";
 import CheckOut from "./components/checkOut";
 import LabelBottomNavigation from "./components/BottomNavigation";
 import Branches from "./components/branches";
-import TelegramLogin from "./components/TelegramLogin";
+import LoginPage from "./components/LoginPage";
 
 const RestaurantOrderApp = () => {
   // --- Data ---
@@ -354,7 +354,6 @@ const RestaurantOrderApp = () => {
 
   return (
     <>
-      <TelegramLogin setUserId={setUserId} />
       <Header
         cartOpen={cartOpen}
         setCartOpen={setCartOpen}
@@ -376,7 +375,7 @@ const RestaurantOrderApp = () => {
               removeFromCart={removeFromCart}
             />
           </div>
-        ) : (
+        ) : activePage === "branches" ? (
           <div className="my-4">
             <Branches
               branches={branches}
@@ -384,7 +383,9 @@ const RestaurantOrderApp = () => {
               setSelectedBranch={setSelectedBranch}
             />
           </div>
-        )}
+        ) : activePage === "login" ? (
+          <LoginPage setUserId={setUserId} />
+        ) : null}
       </div>
 
       <OffCanvas
