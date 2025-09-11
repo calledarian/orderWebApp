@@ -8,7 +8,9 @@ export default function OffCanvas({
     addToCart,
     removeFromCart,
     setOrderModal,
-    getTotalPrice
+    getTotalPrice,
+    isLogged,        
+    setCurrentPage
 }) {
     return (
         <Offcanvas show={cartOpen} onHide={() => setCartOpen(false)} placement="end">
@@ -39,9 +41,30 @@ export default function OffCanvas({
                             ))}
                         </ul>
                         <div className="mt-auto d-grid gap-2">
-                            <Button variant="brand" size="lg" onClick={() => { setCartOpen(false); setOrderModal(true); }}>
-                                Go to Checkout - ${getTotalPrice()}
-                            </Button>
+                            {isLogged ? (
+                                <Button
+                                    variant="brand"
+                                    size="lg"
+                                    onClick={() => {
+                                        setCartOpen(false);
+                                        setOrderModal(true);
+                                    }}
+                                >
+                                    Go to Checkout - ${getTotalPrice()}
+                                </Button>
+                            ) : (
+                                <Button
+                                    variant="brand"
+                                    size="lg"
+                                    onClick={() => {
+                                        setCartOpen(false);
+                                        setCurrentPage('login');
+                                    }}
+                                >
+                                    Go to Login - ${getTotalPrice()}
+                                </Button>
+                            )}
+
                         </div>
                     </>
                 )}

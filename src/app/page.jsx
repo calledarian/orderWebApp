@@ -10,9 +10,12 @@ import OffCanvas from "./components/offCanvas";
 import CheckOut from "./components/checkOut";
 import LabelBottomNavigation from "./components/BottomNavigation";
 import Branches from "./components/branches";
-import LoginPage from "./components/LoginPage";
+import ProfilePage from "./components/LoginPage";
 
 const RestaurantOrderApp = () => {
+
+  const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const [isLogged, setIsLogged] = useState(false);
   // --- Data ---
   const menuCategories = ["All", "Shawarma", "Burgers", "Pizza", "Drinks"];
 
@@ -163,7 +166,7 @@ const RestaurantOrderApp = () => {
   const [cart, setCart] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [orderModal, setOrderModal] = useState(false);
-  const [userId, setUserId] = useState(null);
+  const [user, setUser] = useState(null);
   const [customerInfo, setCustomerInfo] = useState({
     name: "",
     phone: "",
@@ -181,18 +184,6 @@ const RestaurantOrderApp = () => {
   const [qrUploaded, setQrUploaded] = useState(false);
   const [qrUrl, setQrUrl] = useState("");
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("telegramUser");
-    if (storedUser) {
-      const telegramUser = JSON.parse(storedUser);
-      setUserId(telegramUser.id);
-      setCustomerInfo((prev) => ({
-        ...prev,
-        name: telegramUser.first_name || "",
-      }));
-      console.log("Loaded user from localStorage:", telegramUser);
-    }
-  }, []);
   // --- Core Functions ---
   const addToCart = (item) => {
     const existingItem = cart.find((cartItem) => cartItem.id === item.id);
@@ -242,50 +233,54 @@ const RestaurantOrderApp = () => {
 
   const handlePlaceOrder = async () => {
     try {
-      const telegramUser = JSON.parse(localStorage.getItem("telegramUser"));
-      if (!telegramUser) {
+      const telegramUserRaw = localStorage.getItem("telegramUser");
+      if (!telegramUserRaw) {
         showNotification("Please log in with Telegram before placing order", "danger");
         return;
       }
 
-      const response = await fetch(
-        "https://orderwebappserver.onrender.com/order",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            telegram: telegramUser, // full auth object for backend validation
-            items: cart.map((item) => ({
-              menuCategory: item.category || activeCategory,
-              menuItem: item.name,
-              quantity: item.quantity,
-              price: item.price,
-            })),
-            customerInfo,
-            branchId: selectedBranch?.id,
-            qrImage: qrUrl || null,
-          }),
-        }
-      );
+      const telegramUser = JSON.parse(telegramUserRaw);
+
+      // Ensure cart is not empty
+      if (cart.length === 0) {
+        showNotification("Your cart is empty", "danger");
+        return;
+      }
+
+      const response = await fetch(`${BACKEND_URL}/order`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          telegram: telegramUser,
+          items: cart.map(item => ({
+            menuCategory: item.category || activeCategory,
+            menuItem: item.name,
+            quantity: item.quantity,
+            price: item.price,
+          })),
+          customerInfo,
+          branchId: selectedBranch?.id || null,
+          qrImage: qrUrl || null,
+        }),
+      });
 
       const result = await response.json();
 
       if (response.ok) {
-        showNotification(
-          result.message || "Order sent to Telegram successfully!",
-          "success"
-        );
+        showNotification(result.message || "Order sent successfully!", "success");
         setCart([]);
         setOrderModal(false);
         resetOrderProcess();
       } else {
+        console.error("Order failed:", result);
         showNotification(result.message || "Failed to send order", "danger");
       }
     } catch (err) {
-      console.error(err);
+      console.error("Order error:", err);
       showNotification("Something went wrong while sending order", "danger");
     }
   };
+
 
 
 
@@ -357,12 +352,7 @@ const RestaurantOrderApp = () => {
       3000
     );
   };
-  useEffect(() => {
-    const storedUser = localStorage.getItem("telegramUser");
-    if (storedUser) {
-      setUserId(JSON.parse(storedUser).id);
-    }
-  }, []);
+
 
   return (
     <>
@@ -396,7 +386,13 @@ const RestaurantOrderApp = () => {
             />
           </div>
         ) : activePage === "login" ? (
-          <LoginPage setUserId={setUserId} />
+          <ProfilePage
+            user={user}
+            setUser={setUser}
+            isLogged={isLogged}
+            setIsLogged={setIsLogged}
+          />
+
         ) : null}
       </div>
 
@@ -408,6 +404,8 @@ const RestaurantOrderApp = () => {
         removeFromCart={removeFromCart}
         setOrderModal={setOrderModal}
         getTotalPrice={getTotalPrice}
+        isLogged={isLogged}
+        setCurrentPage={setActivePage}
       />
 
       <CheckOut
@@ -425,6 +423,7 @@ const RestaurantOrderApp = () => {
         handleFileUpload={handleFileUpload}
         handleNextStep={handleNextStep}
         branches={branches}
+        isLogged={isLogged}
       />
 
       {notification.show && (
