@@ -247,22 +247,29 @@ const RestaurantOrderApp = () => {
         return;
       }
 
+      const orders = cart.map(item => ({
+        menuCategory: item.category || activeCategory,
+        menuItem: item.name,
+        quantity: item.quantity,
+        price: item.price,
+        total: item.price * item.quantity,
+
+        name: customerInfo.name,
+        phone: customerInfo.phone,
+        address: customerInfo.address,
+        note: customerInfo.note,
+
+        branchId: selectedBranch?.id || null,
+        qrImage: qrUrl || null,
+        telegramId: telegramUser.id,
+      }));
+
       const response = await fetch(`${BACKEND_URL}/order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          telegram: telegramUser,
-          items: cart.map(item => ({
-            menuCategory: item.category || activeCategory,
-            menuItem: item.name,
-            quantity: item.quantity,
-            price: item.price,
-          })),
-          customerInfo,
-          branchId: selectedBranch?.id || null,
-          qrImage: qrUrl || null,
-        }),
+        body: JSON.stringify(orders),
       });
+
 
       const result = await response.json();
 
