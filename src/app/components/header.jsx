@@ -13,7 +13,7 @@ export default function Header({ cartOpen, setCartOpen, getTotalItems }) {
     >
       <div className="container d-flex justify-content-between align-items-center">
         {/* Brand / Title */}
-        <Avatar alt="Turkish Shawarma" sx={{ width: 64, height: 64 }} src="/logo/turkish_head.jpg" />
+        <Avatar alt="Turkish Shawarma" sx={{ width: 64, height: 64 }} src="/logo/turkish-head.jpg" />
         <Typography variant="h5" sx={{ flexGrow: 1, marginLeft: 2, fontWeight: 'bold' }}>
           Turkish Shawarma
         </Typography>

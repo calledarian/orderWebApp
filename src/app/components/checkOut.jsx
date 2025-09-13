@@ -25,7 +25,7 @@ export default function CheckOut({
     // Validation functions
     const validateStep1 = () => {
         const newErrors = {};
-        
+
         if (!customerInfo.name || customerInfo.name.trim().length === 0) {
             newErrors.name = "Name is required";
         } else if (customerInfo.name.trim().length < 2) {
@@ -58,7 +58,7 @@ export default function CheckOut({
 
     const validateStep2 = () => {
         const newErrors = {};
-        
+
         if (!selectedBranch) {
             newErrors.branch = "Please select a branch";
         }
@@ -72,7 +72,7 @@ export default function CheckOut({
 
     const validateStep3 = () => {
         const newErrors = {};
-        
+
         if (paymentMethod === "QR" && !qrUploaded) {
             newErrors.qrUpload = "Please upload payment screenshot";
         }
@@ -108,7 +108,7 @@ export default function CheckOut({
 
     const handleInputChange = (field, value) => {
         setCustomerInfo({ ...customerInfo, [field]: value });
-        
+
         // Clear error for this field when user starts typing
         if (errors[field]) {
             setErrors({ ...errors, [field]: null });
@@ -117,7 +117,7 @@ export default function CheckOut({
 
     const handleFileUploadWithValidation = (e) => {
         const file = e.target.files[0];
-        
+
         if (!file) return;
 
         // Validate file type
@@ -323,8 +323,8 @@ export default function CheckOut({
 
                         <Form.Group className="mt-3">
                             <Form.Label>Payment Method <span className="text-danger">*</span></Form.Label>
-                            <Form.Select 
-                                value={paymentMethod} 
+                            <Form.Select
+                                value={paymentMethod}
                                 onChange={(e) => handlePaymentMethodChange(e.target.value)}
                                 isInvalid={!!errors.paymentMethod}
                             >
@@ -345,7 +345,7 @@ export default function CheckOut({
 
                         <div style={{ border: "2px dashed #ccc", padding: "1rem", borderRadius: "8px", textAlign: "center" }}>
                             <Image
-                                src="/qr/qr.png"
+                                src="/qr/qr.jpg"
                                 alt="QR Code"
                                 width={250}
                                 height={250}
@@ -373,13 +373,13 @@ export default function CheckOut({
                         </Button>
 
                         <div className="text-muted small text-center">
-                            Supported formats: JPEG, PNG, GIF<br/>
+                            Supported formats: JPEG, PNG, GIF<br />
                             Maximum file size: 10MB
                         </div>
 
                         {qrUploaded && (
                             <Alert variant="success" className="text-center">
-                                <strong>Payment screenshot uploaded successfully!</strong><br/>
+                                <strong>Payment screenshot uploaded successfully!</strong><br />
                                 You can now place your order.
                             </Alert>
                         )}
@@ -388,8 +388,8 @@ export default function CheckOut({
 
             </Modal.Body>
             <Modal.Footer className="d-flex justify-content-between">
-                <Button 
-                    variant="outline-secondary" 
+                <Button
+                    variant="outline-secondary"
                     onClick={() => {
                         if (orderStep === 1) {
                             setOrderModal(false);
@@ -402,9 +402,9 @@ export default function CheckOut({
                 >
                     {orderStep === 1 ? "Cancel" : "← Back"}
                 </Button>
-                
-                <Button 
-                    variant="primary" 
+
+                <Button
+                    variant="primary"
                     onClick={handleValidatedNextStep}
                     disabled={!isFormValid() && showError}
                 >

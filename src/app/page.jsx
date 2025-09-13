@@ -164,6 +164,25 @@ const RestaurantOrderApp = () => {
   const [activeCategory, setActiveCategory] = useState("All");
   const [activePage, setActivePage] = useState("menu");
   const [cart, setCart] = useState([]);
+
+  // Load cart from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedCart = localStorage.getItem("cart");
+      if (savedCart) {
+        setCart(JSON.parse(savedCart));
+      }
+    }
+  }, []);
+
+  // Save cart whenever it changes
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+  }, [cart]);
+
+
   const [cartOpen, setCartOpen] = useState(false);
   const [orderModal, setOrderModal] = useState(false);
   const [user, setUser] = useState(null);
@@ -184,7 +203,6 @@ const RestaurantOrderApp = () => {
   const [qrUploaded, setQrUploaded] = useState(false);
   const [qrUrl, setQrUrl] = useState("");
 
-  // --- Core Functions ---
   const addToCart = (item) => {
     const existingItem = cart.find((cartItem) => cartItem.id === item.id);
     if (existingItem) {
@@ -199,6 +217,7 @@ const RestaurantOrderApp = () => {
       setCart([...cart, { ...item, quantity: 1 }]);
     }
   };
+
 
   const removeFromCart = (itemId) => {
     const existingItem = cart.find((cartItem) => cartItem.id === itemId);
