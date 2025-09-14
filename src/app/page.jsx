@@ -460,6 +460,7 @@ const RestaurantOrderApp = () => {
         handleNextStep={handleNextStep}
         branches={branches}
         isLogged={isLogged}
+        isSubmitting={isSubmitting}
       />
 
       {notification.show && (

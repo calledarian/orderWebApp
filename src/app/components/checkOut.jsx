@@ -16,7 +16,8 @@ export default function CheckOut({
     qrUploaded,
     handleFileUpload,
     handleNextStep,
-    branches
+    branches,
+    isSubmitting
 }) {
     const fileInputRef = useRef(null);
     const [errors, setErrors] = useState({});
@@ -425,9 +426,9 @@ export default function CheckOut({
                 <Button
                     variant="primary"
                     onClick={handleValidatedNextStep}
-                    disabled={loading || (!isFormValid() && showError)}  // 🔹 prevent clicking during upload
+                    disabled={loading || isSubmitting || (!isFormValid() && showError)}  // 🔹 prevent clicking during upload
                 >
-                    {loading ? "Please wait..." : getButtonText()}
+                    {loading || isSubmitting ? "Please wait..." : getButtonText()}
                 </Button>
             </Modal.Footer>
         </Modal>
