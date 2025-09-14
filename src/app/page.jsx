@@ -360,7 +360,11 @@ const RestaurantOrderApp = () => {
 
       const data = await res.json();
       console.log("Cloudinary upload success:", data.secure_url);
-      setQrUrl(data.secure_url);
+      const transformedUrl = data.secure_url.replace(
+        "/upload/",
+        "/upload/w_1280,q_auto,f_auto/"
+      );
+      setQrUrl(transformedUrl);
       setQrUploaded(true);
       showNotification("Payment screenshot uploaded successfully!", "info");
     } catch (err) {
