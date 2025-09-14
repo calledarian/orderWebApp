@@ -287,7 +287,7 @@ const RestaurantOrderApp = () => {
         qrImage: qrUrl || null,
         telegramId: telegramUser.id,
       }));
-
+      console.log(selectedBranch?.name)
       const response = await fetch(`${BACKEND_URL}/order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
