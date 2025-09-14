@@ -202,6 +202,7 @@ const RestaurantOrderApp = () => {
   const [paymentMethod, setPaymentMethod] = useState("QR");
   const [qrUploaded, setQrUploaded] = useState(false);
   const [qrUrl, setQrUrl] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const addToCart = (item) => {
     const existingItem = cart.find((cartItem) => cartItem.id === item.id);
@@ -251,20 +252,24 @@ const RestaurantOrderApp = () => {
   };
 
   const handlePlaceOrder = async () => {
+    if (isSubmitting) return; // prevent double-clicks
+    setIsSubmitting(true);
+
     try {
       const telegramUserRaw = localStorage.getItem("telegramUser");
       if (!telegramUserRaw) {
         showNotification("Please log in with Telegram before placing order", "danger");
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (cart.length === 0) {
+        showNotification("Your cart is empty", "danger");
+        setIsSubmitting(false);
         return;
       }
 
       const telegramUser = JSON.parse(telegramUserRaw);
-
-      // Ensure cart is not empty
-      if (cart.length === 0) {
-        showNotification("Your cart is empty", "danger");
-        return;
-      }
 
       const orders = cart.map(item => ({
         menuCategory: item.category || activeCategory,
@@ -289,7 +294,6 @@ const RestaurantOrderApp = () => {
         body: JSON.stringify(orders),
       });
 
-
       const result = await response.json();
 
       if (response.ok) {
@@ -304,6 +308,8 @@ const RestaurantOrderApp = () => {
     } catch (err) {
       console.error("Order error:", err);
       showNotification("Something went wrong while sending order", "danger");
+    } finally {
+      setIsSubmitting(false); // always re-enable after request finishes
     }
   };
 
