@@ -21,6 +21,7 @@ export default function CheckOut({
     const fileInputRef = useRef(null);
     const [errors, setErrors] = useState({});
     const [showError, setShowError] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     // Validation functions
     const validateStep1 = () => {
@@ -115,10 +116,11 @@ export default function CheckOut({
         }
     };
 
-    const handleFileUploadWithValidation = (e) => {
+    const handleFileUploadWithValidation = async (e) => {
         const file = e.target.files[0];
-
         if (!file) return;
+
+        setLoading(true);
 
         // Validate file type
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
@@ -126,15 +128,17 @@ export default function CheckOut({
             setErrors({ ...errors, qrUpload: "Please upload a valid image file (JPEG, PNG, JPG)" });
             setShowError(true);
             setTimeout(() => setShowError(false), 5000);
+            setLoading(false);
             return;
         }
 
-        // Validate file size (max 5MB)
-        const maxSize = 10 * 1024 * 1024; // 5MB in bytes
+        // Validate file size (max 10MB)
+        const maxSize = 10 * 1024 * 1024; // 10MB in bytes
         if (file.size > maxSize) {
-            setErrors({ ...errors, qrUpload: "File size must be less than 5MB" });
+            setErrors({ ...errors, qrUpload: "File size must be less than 10MB" });
             setShowError(true);
             setTimeout(() => setShowError(false), 5000);
+            setLoading(false);
             return;
         }
 
@@ -143,8 +147,15 @@ export default function CheckOut({
             setErrors({ ...errors, qrUpload: null });
         }
 
-        // Call the original handler
-        handleFileUpload(e);
+        try {
+            await handleFileUpload(e); // wait until upload finishes
+        } catch (err) {
+            setErrors({ ...errors, qrUpload: "Upload failed, please try again" });
+            setShowError(true);
+            setTimeout(() => setShowError(false), 5000);
+        } finally {
+            setLoading(false); // only stop loading after upload/validation done
+        }
     };
 
     const handleBranchSelection = (branch) => {
@@ -373,7 +384,7 @@ export default function CheckOut({
                         </Button>
 
                         <div className="text-muted small text-center">
-                            Supported formats: JPEG, PNG, GIF<br />
+                            Supported formats: JPEG, PNG, JPG<br />
                             Maximum file size: 10MB
                         </div>
 

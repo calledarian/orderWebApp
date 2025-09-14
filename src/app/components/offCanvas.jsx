@@ -9,7 +9,7 @@ export default function OffCanvas({
     removeFromCart,
     setOrderModal,
     getTotalPrice,
-    isLogged,        
+    isLogged,
     setCurrentPage
 }) {
     return (
@@ -30,7 +30,7 @@ export default function OffCanvas({
                                 <li className="list-group-item d-flex justify-content-between align-items-center px-0" key={item.id}>
                                     <div>
                                         <div className="fw-bold">{item.name}</div>
-                                        <small className="text-brand fw-bold">${item.price.toFixed(2)}</small>
+                                        <small className="text-brand fw-bold">${(item.price * item.quantity).toFixed(2)}</small>
                                     </div>
                                     <div className="d-flex align-items-center gap-2">
                                         <Button variant="outline-danger" className="quantity-btn" onClick={() => removeFromCart(item.id)}>-</Button>

@@ -50,9 +50,8 @@ export default function ProfilePage({ user, setUser, isLogged, setIsLogged }) {
             <Typography variant="h6">{user.first_name} {user.last_name || ''}</Typography>
             {user.username && <Typography variant="subtitle1">@{user.username}</Typography>}
             <Typography variant="body2">ID: {user.id}</Typography>
-            <Typography variant="body2">Auth Date: {new Date(user.auth_date * 1000).toLocaleString()}</Typography>
-            <Typography variant="body2">Hash: {user.hash}</Typography>
-            <Button variant="contained" color="secondary" sx={{ mt: 2 }} onClick={handleLogout}>Logout</Button>
+            <Typography variant="body2">Date: {new Date(user.auth_date * 1000).toDateString()}</Typography>
+            <Button variant="contained" color="error" sx={{ mt: 2 }} onClick={handleLogout}>Logout</Button>
           </CardContent>
         </Card>
       )}
