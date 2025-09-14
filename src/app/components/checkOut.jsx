@@ -379,9 +379,16 @@ export default function CheckOut({
                             variant={qrUploaded ? "success" : "outline-primary"}
                             onClick={() => fileInputRef.current && fileInputRef.current.click()}
                             size="lg"
+                            disabled={loading}
                         >
-                            {qrUploaded ? "✓ Screenshot Uploaded" : " Upload Payment Screenshot"}
+                            {loading ? (
+                                <>
+                                    <span className="spinner-border spinner-border-sm me-2" role="status" />
+                                    Uploading...
+                                </>
+                            ) : qrUploaded ? "✓ Screenshot Uploaded" : "Upload Payment Screenshot"}
                         </Button>
+
 
                         <div className="text-muted small text-center">
                             Supported formats: JPEG, PNG, JPG<br />
@@ -417,9 +424,9 @@ export default function CheckOut({
                 <Button
                     variant="primary"
                     onClick={handleValidatedNextStep}
-                    disabled={!isFormValid() && showError}
+                    disabled={loading || (!isFormValid() && showError)}  // 🔹 prevent clicking during upload
                 >
-                    {getButtonText()}
+                    {loading ? "Please wait..." : getButtonText()}
                 </Button>
             </Modal.Footer>
         </Modal>
