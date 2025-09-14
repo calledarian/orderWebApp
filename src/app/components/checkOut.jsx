@@ -82,6 +82,7 @@ export default function CheckOut({
     };
 
     const handleValidatedNextStep = () => {
+        if (loading) return; // 🔹 prevent proceeding if upload is still ongoing
         let validationErrors = {};
 
         // Validate current step
