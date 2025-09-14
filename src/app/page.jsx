@@ -283,7 +283,7 @@ const RestaurantOrderApp = () => {
         address: customerInfo.address,
         note: customerInfo.note,
 
-        branchId: selectedBranch?.id || null,
+        branchName: selectedBranch.name || null,
         qrImage: qrUrl || null,
         telegramId: telegramUser.id,
       }));
