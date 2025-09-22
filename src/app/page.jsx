@@ -13,7 +13,6 @@ import Branches from "./components/branches";
 import ProfilePage from "./components/LoginPage";
 
 const RestaurantOrderApp = () => {
-
   const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
   const [isLogged, setIsLogged] = useState(false);
   // --- Data ---
@@ -138,7 +137,6 @@ const RestaurantOrderApp = () => {
     ],
   };
 
-
   const branches = [
     {
       id: 1,
@@ -182,7 +180,6 @@ const RestaurantOrderApp = () => {
     }
   }, [cart]);
 
-
   const [cartOpen, setCartOpen] = useState(false);
   const [orderModal, setOrderModal] = useState(false);
   const [user, setUser] = useState(null);
@@ -211,14 +208,13 @@ const RestaurantOrderApp = () => {
         cart.map((cartItem) =>
           cartItem.id === item.id
             ? { ...cartItem, quantity: cartItem.quantity + 1 }
-            : cartItem
-        )
+            : cartItem,
+        ),
       );
     } else {
       setCart([...cart, { ...item, quantity: 1 }]);
     }
   };
-
 
   const removeFromCart = (itemId) => {
     const existingItem = cart.find((cartItem) => cartItem.id === itemId);
@@ -227,8 +223,8 @@ const RestaurantOrderApp = () => {
         cart.map((cartItem) =>
           cartItem.id === itemId
             ? { ...cartItem, quantity: cartItem.quantity - 1 }
-            : cartItem
-        )
+            : cartItem,
+        ),
       );
     } else {
       setCart(cart.filter((cartItem) => cartItem.id !== itemId));
@@ -258,7 +254,10 @@ const RestaurantOrderApp = () => {
     try {
       const telegramUserRaw = localStorage.getItem("telegramUser");
       if (!telegramUserRaw) {
-        showNotification("Please log in with Telegram before placing order", "danger");
+        showNotification(
+          "Please log in with Telegram before placing order",
+          "danger",
+        );
         setIsSubmitting(false);
         return;
       }
@@ -271,7 +270,7 @@ const RestaurantOrderApp = () => {
 
       const telegramUser = JSON.parse(telegramUserRaw);
 
-      const orders = cart.map(item => ({
+      const orders = cart.map((item) => ({
         menuCategory: item.category || activeCategory,
         menuItem: item.name,
         quantity: item.quantity,
@@ -287,7 +286,7 @@ const RestaurantOrderApp = () => {
         qrImage: qrUrl || null,
         telegramId: telegramUser.id,
       }));
-      console.log(selectedBranch?.name)
+      console.log(selectedBranch?.name);
       const response = await fetch(`${BACKEND_URL}/order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -297,7 +296,10 @@ const RestaurantOrderApp = () => {
       const result = await response.json();
 
       if (response.ok) {
-        showNotification(result.message || "Order sent successfully!", "success");
+        showNotification(
+          result.message || "Order sent successfully!",
+          "success",
+        );
         setCart([]);
         setOrderModal(false);
         resetOrderProcess();
@@ -313,13 +315,11 @@ const RestaurantOrderApp = () => {
     }
   };
 
-
-
-
   const handleNextStep = () => {
     if (orderStep === 1) {
       if (customerInfo.name && customerInfo.phone) setOrderStep(2);
-      else showNotification("Please fill in your name and phone number", "danger");
+      else
+        showNotification("Please fill in your name and phone number", "danger");
     } else if (orderStep === 2) {
       if (selectedBranch) {
         if (paymentMethod === "COD") handlePlaceOrder();
@@ -354,8 +354,8 @@ const RestaurantOrderApp = () => {
         `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUD_NAME}/image/upload`,
         {
           method: "POST",
-          body: formData
-        }
+          body: formData,
+        },
       );
 
       if (!res.ok) {
@@ -368,7 +368,7 @@ const RestaurantOrderApp = () => {
       console.log("Cloudinary upload success:", data.secure_url);
       const transformedUrl = data.secure_url.replace(
         "/upload/",
-        "/upload/w_1280,q_auto,f_auto/"
+        "/upload/w_1280,q_auto,f_auto/",
       );
       setQrUrl(transformedUrl);
       setQrUploaded(true);
@@ -379,16 +379,13 @@ const RestaurantOrderApp = () => {
     }
   };
 
-
-
   const showNotification = (message, variant) => {
     setNotification({ show: true, message, variant });
     setTimeout(
       () => setNotification({ show: false, message: "", variant: "success" }),
-      3000
+      3000,
     );
   };
-
 
   return (
     <>
@@ -428,7 +425,6 @@ const RestaurantOrderApp = () => {
             isLogged={isLogged}
             setIsLogged={setIsLogged}
           />
-
         ) : null}
       </div>
 
@@ -455,6 +451,7 @@ const RestaurantOrderApp = () => {
         setSelectedBranch={setSelectedBranch}
         paymentMethod={paymentMethod}
         setPaymentMethod={setPaymentMethod}
+        getTotalPrice={getTotalPrice}
         qrUploaded={qrUploaded}
         handleFileUpload={handleFileUpload}
         handleNextStep={handleNextStep}
